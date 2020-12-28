@@ -1,0 +1,252 @@
+﻿@model ItemImagesViewModel
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Items Images"].Value;
+}
+
+<!-- Title -->
+<div class="block-header">
+    <h2>@Localizer["Images"].Value</h2>
+</div>
+
+<!-- Header -->
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <form asp-controller="ItemImage" asp-action="Index">
+                    <label asp-for="SelectedCategoryId">@Localizer["Category"].Value</label>
+                    <select asp-for="SelectedCategoryId" asp-items="Model.CategoriesList">
+                        <option value="">@Localizer["All"].Value</option>
+                    </select>
+                    <input asp-for="OnlyUnattached" class="m-l-5" />
+                    <span>@Localizer["Only Unattached"].Value</span>
+                    <button type="submit" class="btn btn-primary m-l-5">@Localizer["Search"].Value</button>
+                </form>
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">more_vert</i>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li>
+                                <a asp-controller="ItemImage" asp-action="UploadImage">@Localizer["Add image"].Value</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <!-- Images table -->
+                <table class="table" id="imagesTable">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["Image"].Value</th>
+                            <th>@Localizer["Category"].Value</th>
+                            <th>@Localizer["Item"].Value</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var image in Model.Images)
+                        {
+                            var trId = "tr" + image.Id;
+                            var categoryTr = "category" + image.Id;
+                            var itemTr = "item" + image.Id;
+                            <tr id="@trId">
+                                <td><img src="~/images/thumbs/@image.ImageThumbUrl" alt="img" width="75" height="75" /></td>
+                                <td id="@categoryTr">@image.CategoryName</td>
+                                <td id="@itemTr">@image.ItemName</td>
+                                <td>
+                                    <a href="javascript: void(0)" class="editImage" data-imageId="@image.Id"><i class="fa fa-edit"></i></a>
+                                    @if (!image.Attached)
+                                    {
+                                        <a class="attachToItem" asp-controller="Item" asp-action="Create" asp-route-imageToAttachId="@image.Id" title="@Localizer["Attach to new item"].Value"><i class="fa fa-user"></i></a>
+                                    }
+                                    &nbsp;<a href="javascript:void(0)" class="deleteImage" data-imageId="@image.Id"><i class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Modals {
+
+    <!-- #region Edit Modal -->
+    <div class="modal fade" id="editImageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["Edit Image"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editImageForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <div class="p-5">
+                            <div class="form-group">
+                                <label for="editCategoryId" class="col-form-label">@Localizer["Category"].Value</label>
+                                <select class="form-control" id="editCategoryId" name="CategoryId" asp-items="Model.CategoriesList">
+                                    <option value="">@Localizer["Select a category"].Value</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editItemId" class="col-form-label">@Localizer["Item"].Value</label>
+                                <select class="form-control" id="editItemId" name="ItemId" asp-items="Model.ItemsList">
+                                    <option value="">@Localizer["Select an item"].Value</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" id="editedImageId" name="ImageId" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localizer["Edit"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- Delete modal -->
+    <div class="modal fade" id="deleteImageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <h3 class="heading">@Localizer["Are you sure?"]</h3>
+                </div>
+                <input type="hidden" id="deleteImageId" />
+                <!--Body-->
+                <div class="modal-body">
+                    <i class="fa fa-times fa-4x animated rotateIn"></i>
+                </div>
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button id="deleteBtn" class="btn btn-outline-danger">@Localizer["Yes"]</button>
+                    <button class="btn btn-danger waves-effect" data-dismiss="modal">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#imagesTable').DataTable();
+            
+            console.log('newCount', newCount);
+            console.log('newValue', newValue);
+            $('.editImage').on('click', function (e) {
+                // get image id, category id, item id
+                var imageId = $(this).data('imageid');
+                // get data and fill the edit modal
+                $.ajax({
+                    url: '@Url.Action("ImageDetails", "ItemImage")/?imageId=' + imageId,
+                    method: 'GET',
+                    success: function (data) {
+                        $("#editedImageId").val(imageId);
+
+                        if (data.categoryId)
+                            $("#editCategoryId").val(data.categoryId);
+                        $("#editItemId").val(data.itemId);
+
+                        $("#editImageModal").modal("toggle");
+                    }
+                }).fail((e) => {
+                    ShowErrorNotification(e.responseText);
+                })
+
+                // Show edit modal
+            });
+
+            $("#editImageForm").submit((e) => {
+                e.preventDefault();
+
+                var data = $("#editImageForm").serialize();
+                var imageId = $("#editedImageId").val();
+                $.ajax({
+                    url: '@Url.Action("AttachImage", "ItemImage")',
+                    method: "POST",
+                    data: data,
+                    success: (data) => {
+                        $('#imagesTable tbody tr td:nth-child(3)').each(function () {
+                            var currentTd = $(this);
+                            if (currentTd.html() === data.itemName) {
+                                currentTd.html('@Localizer["No Item"].Value');
+                                //var aTag = '<a class="attachToItem" href="@Url.Action("Create", "Item")?imageToAttachId=' + imageId + '" title="@Localizer["Attach to new item"].Value"><i class="fa fa-user"></i></a>';
+                                var aTag = document.createElement('a');
+                                aTag.setAttribute('class', 'attachToItem');
+                                aTag.setAttribute('href', '@Url.Action("Create", "Item")?imageToAttachId=' + imageId);
+
+                                var iTag = document.createElement('i');
+                                iTag.setAttribute('class', 'fa fa-user');
+
+                                aTag.appendChild(iTag);
+                                currentTd.next().append(aTag);
+                            }
+                        });
+                        var children = $('#tr' + imageId + ' td:last').children();
+                        if (children.length > 2) {
+                            children.each(function () {
+                                var currentElement = $(this);
+                                if (currentElement.hasClass('attachToItem')) {
+                                    currentElement.remove();
+                                }
+                            });
+                        }
+
+                        $("#category" + imageId).html(data.categoryName);
+                        $("#item" + imageId).html(data.itemName);
+                        $("#editImageModal").modal('toggle');
+                        ShowSuccessNotification("Item edited successfully!");
+                    }
+                }).fail(function (e) {
+                    ShowErrorNotification(e.responseText);
+                });
+            });
+
+            $('.deleteImage').on('click', function(e) {
+                // get image id
+                var imageId = $(this).data('imageid');
+                // fill the id in the modal
+                $('#deleteImageId').val(imageId);
+
+                // show the modal
+                $('#deleteImageModal').modal('toggle');
+            });
+
+            $('#deleteBtn').on('click', () => {
+                // get image id to delete
+                var imageId = $('#deleteImageId').val();
+
+                // send the request
+                $.ajax({
+                    url: "@Url.Action("Delete", "ItemImage")/" + imageId,
+                    method: "POST",
+                    success: function (e) {
+                        // Remove the image from the table
+                        $("#imagesTable").DataTable().row('#tr' + imageId).remove().draw(false);
+
+                        $('#deleteImageModal').modal("toggle");
+
+                        ShowSuccessNotification("Image deleted successfully!!");
+                    }
+                }).fail((e) => {
+                    $('#deleteImageModal').modal("toggle");
+                    ShowErrorNotification(e.responseText);
+                });
+            });
+        });
+    </script>
+}

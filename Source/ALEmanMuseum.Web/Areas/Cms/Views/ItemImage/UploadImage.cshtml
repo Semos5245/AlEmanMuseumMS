@@ -1,0 +1,71 @@
+﻿@model UploadItemImageViewModel
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Upload image"].Value;
+}
+
+<!-- Title -->
+<div class="block-header">
+    <h2>@Localizer["New Images"].Value</h2>
+</div>
+
+<!-- Header -->
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <label class="col-form-label" for="categoriesList">@Localizer["Category"].Value</label>
+                <select class="form-control" id="categoriesList" asp-items="Model.CategoriesList">
+                    <option>@Localizer["Select a category"].Value</option>
+                </select>
+                <br />
+                <div class="container">
+                    <button class="btn btn-danger" id="btnClear">@Localizer["Clear"]</button>
+                    <button class="btn btn-success" id="btnSend">@Localizer["Send"]</button>
+                </div>
+            </div>
+            <div class="body">
+                <form asp-action="UploadImage" asp-controller="ItemImage" id="myDropzone" class="dropzone" enctype="multipart/form-data">
+                    <div class="dz-message">
+                        <div class="drag-icon-cph">
+                            <i class="material-icons">touch_app</i>
+                        </div>
+                        <h3>@Localizer["Drop files here or click to upload"].</h3>
+                    </div>
+                    <div class="fallback">
+                        <input name="files" type="file" multiple/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var myDropzone = new Dropzone('#myDropzone', {
+                paramName: 'files',
+                addRemoveLinks: true,
+                uploadMultiple: false,
+                thumbnailWidth: 80,
+                thumbnailHeight: 80,
+                autoProcessQueue: false,
+                parallelUploads: 10,
+                sending: function (file, xhr, formData) {
+                    var categoryId = $("#categoriesList").val();
+                    formData.append("categoryId", categoryId);
+                    formData.append("file", file);
+                }
+            });
+
+            $("#btnSend").on("click", function () {
+                myDropzone.processQueue();
+            });
+
+            $("#btnClear").on("click", function () {
+                myDropzone.removeAllFiles(true);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,395 @@
+﻿@model IEnumerable<Category>
+@inject IStringLocalizer<Program> Localize
+
+@{
+    ViewData["Title"] = Localize["Categories"];
+}
+
+
+<div class="block-header">
+    <h2>
+        @Localize["Categories"]
+    </h2>
+</div>
+
+<!-- #region Categories Table-->
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    @Localize["Categories"]
+                </h2>
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">more_vert</i>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a href="javascript:void(0);" id="addCategoryBtn">@Localize["Add Category"]</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover" id="categoriesTable">
+                        <thead>
+                            <tr>
+                                <th>@Localize["Arabic name"]</th>
+                                <th>@Localize["English name"]</th>
+                                <th>@Localize["Created Date"]</th>
+                                <th>@Localize["Last Modified Date"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model)
+                            {
+                                var trId = "tr" + category.Id;
+                                var tdArabicNameId = "tdArabicName" + category.Id;
+                                var tdEnglishNameId = "tdEnglishName" + category.Id;
+                                var tdModifiedDateId = "tdLastModifiedDate" + category.Id;
+
+                                <tr id="@trId">
+                                    <td id="@tdArabicNameId">@category.ArabicName</td>
+                                    <td id="@tdEnglishNameId">@category.EnglishName</td>
+                                    <td>@category.CreatedDate.ToLocalTime()</td>
+                                    <td id="@tdModifiedDateId">@category.LastModifiedDate.ToLocalTime()</td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="editCategory" data-categoryId="@category.Id">&nbsp;<i class="fa fa-edit"></i>@Localize["Edit"]</a>
+                                        <a href="javascript:void(0)" class="deleteCategory" data-categoryId="@category.Id">&nbsp;<i class="fa fa-trash"></i>@Localize["Delete"]</a>
+                                        <a asp-controller="ItemImage" asp-action="CategoryImages" asp-route-id="@category.Id">&nbsp;<i class="fa fa-trash"></i>@Localize["Delete"]</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- #endregion -->
+
+@section Modals{
+
+    <!-- #region Add Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localize["Add New Category"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="AddCategoryForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <h4 class="text-center errorMessage" id="AdditionMessage"></h4>
+                        <div class="p-5">
+                            <label for="NewCategoryArabicName">@Localize["Arabic Name"]: </label>
+                            <input placeholder="اسم الصنف" class="form-control" required id="NewCategoryArabicName" />
+                            <label for="NewCategoryEnglishName">@Localize["English Name"]: </label>
+                            <input placeholder="Category Name" class="form-control" required id="NewCategoryEnglishName" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localize["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localize["Add"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- #region Edit Modal -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localize["Edit Category"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="EditCategoryForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <h3 class="text-center errorMessage" id="EditionMessage"></h3>
+                        <div class="p-5">
+                            <label for="EditCategoryArabicName">@Localize["Arabic Name"]: </label>
+                            <input placeholder="اسم الصنف" class="form-control" required id="EditedCategoryArabicName" />
+                            <label for="EditCategoryEnglishName">@Localize["English Name"]: </label>
+                            <input placeholder="Category Name" class="form-control" required id="EditedCategoryEnglishName" />
+                        </div>
+                        <input type="hidden" id="EditedCategoryId" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localize["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localize["Edit"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- #region Delete Modal -->
+    <div class="modal fade" id="deleteCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <p class="heading">@Localize["Are you sure?"]</p>
+                </div>
+                <input type="hidden" value="" id="deleteCategoryId" />
+                <!--Body-->
+                <div class="modal-body">
+
+                    <i class="fa fa-times fa-4x animated rotateIn"></i>
+
+                </div>
+
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button id="deleteBtn" class="btn btn-outline-danger">@Localize["Yes"]</button>
+                    <button class="btn btn-danger waves-effect" data-dismiss="modal">@Localize["No"]</button>
+                </div>
+            </div>
+            <!--/.Content-->
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@section Scripts{
+
+    <script>
+
+        $(function () {
+
+            // #region Startup Actions
+
+            $("#categoriesTable").DataTable({
+                "processing": true,
+                "bServerSide": true,
+                "sAjaxSource": '@Url.Action("CategoriesByPageAndSearch", "Category")',
+                "sServerMethod": 'GET',
+                "aoColumns": [
+                    { data: 'arabicName', 'orderable': true},
+                    { data: 'englishName', 'orderable': true},
+                    { data: 'createdDate', 'orderable': true},
+                    { data: 'lastModifiedDate', 'orderable': true },
+                    {
+                        data: function (o) {
+                            return "<a href='javascript:void(0)' class='editCategory' data-categoryid='" + o.id +"'><i class='fa fa-edit'></i>@Localize["Edit"]</a>" +
+                                "<a href='javascript:void(0)' class='deleteCategory' data-categoryid='" + o.id +"'><i class='fa fa-trash-o'></i>@Localize["Delete"]</a>";
+                        }
+                    }
+                ],
+                createdRow: function (row, data, index) {
+                    var kids = $(row).children();
+                    $(kids[0]).attr('id', 'tdArabicName' + data.id);
+                    $(kids[1]).attr('id', 'tdEnglishName' + data.id);
+                    $(kids[3]).attr('id', 'tdLastModifiedDate' + data.id);
+                }
+            });
+
+            // #endregion
+
+        });
+
+        // #region Dom Elements
+
+        // Get basic elements for later use
+        var addMessageElement = $("#AdditionMessage");
+        var editMessageElement = $("#EditionMessage");
+        var deleteMessageElement = $("#DeletionMessage");
+        var addModal = $("#addCategoryModal");
+        var editModal = $("#editCategoryModal");
+        var deleteModal = $("#deleteCategoryModal");
+        var deleteCategoryIdElement = $("#deleteCategoryId");
+        var editedCategoryIdElement = $("#EditedCategoryId");
+        var editedCategoryArabicNameElement = $("#EditedCategoryArabicName");
+        var editedCategoryEnglishNameElement = $("#EditedCategoryEnglishName");
+        var newCategoryArabicNameElement = $("#NewCategoryArabicName");
+        var newCategoryEnglishNameElement = $("#NewCategoryEnglishName");
+        var addForm = $("#AddCategoryForm");
+        var editForm = $("#EditCategoryForm");
+
+        // #endregion
+
+        // #region Event Subscriptions
+
+        // Subscribe to when the add is clicked
+        $("#addCategoryBtn").click(function () {
+            // Show the add model
+            addModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that edit rows
+        $("#categoriesTable").on('click', '.editCategory', function () {
+            // Get the id attached to the button that has been pressed
+            var id = $(this).data("categoryid");
+
+            // Get the name related to the category id
+            var arabicName = $("#tdArabicName" + id).text();
+            var englishName = $("#tdEnglishName" + id).text();
+
+            // Fill the modal with the category name and the id
+            editedCategoryIdElement.val(id);
+            editedCategoryArabicNameElement.val(arabicName);
+            editedCategoryEnglishNameElement.val(englishName);
+
+            // Open the modal
+            editModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that delete rows
+         $("#categoriesTable").on('click', '.deleteCategory', function () {
+            // Fill the id in the modal
+            deleteCategoryIdElement.val($(this).data("categoryid"));
+
+            // Open the modal
+            deleteModal.modal("toggle");
+        });
+
+        $("#deleteBtn").on("click", function () {
+            DeleteCategory(deleteCategoryIdElement.val());
+        });
+
+        // Subscribe to when the add form is submitted
+        addForm.submit(function (e) {
+            // Prevent the form from being submitted
+            e.preventDefault();
+
+            // Add the category
+            AddCategory(newCategoryArabicNameElement.val(), newCategoryEnglishNameElement.val());
+        });
+
+        // Subscribe to when the edit form is submitted
+        editForm.submit(function (e) {
+            // Prevent the default behavior
+            e.preventDefault();
+
+            // Edit category
+            EditCategory(editedCategoryIdElement.val(), editedCategoryArabicNameElement.val(), editedCategoryEnglishNameElement.val());
+        });
+
+        // #endregion
+
+        // #region Helper Functions
+
+        // Adds a new category
+        function AddCategory(arabicName, englishName) {
+
+            var data = {
+                arabicName: arabicName,
+                englishName: englishName
+            };
+
+            // Add category through ajax call
+            $.ajax({
+                // Type of request
+                type: "POST",
+                // Data to be sent
+                data: data,
+                // Url to send the request to
+                url: "@Url.Action("Create", "Category")",
+                // If the request was successfull
+                success: function (data) {
+                    // Close the modal
+                    addModal.modal("toggle");
+
+                    setTimeout(() => {
+                        // Show success notification
+                        ShowSuccessNotification("@Localize["Category has been added successfully!"]");
+                    }, 1500);
+
+                    // Refresh the page
+                    location.reload();
+                }
+                // On fail
+            }).fail(function (e) {
+                addMessageElement.html(e.responseText)
+
+                // Show failure notification
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Deletes a category
+        function DeleteCategory(id) {
+            // Send request
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "Category")/" + id,
+                success: function () {
+                    // Remove the row and re-apply the magic to the table
+                    $("#categoriesTable").DataTable().row('#tr' + id).remove().draw(false);
+
+                    // Close the modal
+                    deleteModal.modal("toggle");
+
+                    setTimeout(() => {
+                        // Show success message
+                        ShowSuccessNotification("@Localize["Category has been deleted successfully!"]");
+                    }, 1500);
+
+                    location.reload();
+                }
+            }).fail(function (e) {
+                deleteMessageElement.val(e.responseText);
+
+                // Show error message
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Edits a category
+        function EditCategory(id, arabicName, englishName) {
+            var data = {
+                arabicName: arabicName,
+                englishName: englishName,
+                categoryId: id
+            };
+
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "@Url.Action("Edit", "Category")/" + id,
+                success: function (data) {
+                    // Edit the values at the table
+                    $("#tdArabicName" + id).html(data.arabicName);
+                    $("#tdEnglishName" + id).html(data.englishName);
+                    $("#tdLastModifiedDate" + id).html(data.lastModifiedDate);
+
+                    // reapply the datatable magic
+                    $("#categoriesTable").DataTable();
+
+                    // close the edit modal
+                    editModal.modal("toggle");
+
+                    setTimeout(() => {
+                        // Show success message
+                        ShowSuccessNotification("@Localize["Category has been updated successfully!"]}");
+                    }, 1500);
+
+                    location.reload();
+                }
+
+                // On failing
+            }).fail(function (e) {
+                deleteMessageElement.val(e.responseText);
+
+                // Show error message
+                ShowErrorNotification(e.responseText);
+            });
+        }
+        // #endregion
+
+    </script>
+
+}
+

@@ -1,0 +1,6 @@
+﻿@model CheckoutDetailsViewModel
+@inject IStringLocalizer<Program> Localize
+@{ 
+    ViewData["Title"] = Localize["Checkout {0} details", Model.CheckoutNumber].Value;
+}
+

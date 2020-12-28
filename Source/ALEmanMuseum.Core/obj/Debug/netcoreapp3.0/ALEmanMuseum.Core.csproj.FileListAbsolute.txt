@@ -1,0 +1,8 @@
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\bin\Debug\netcoreapp3.0\ALEmanMuseum.Core.deps.json
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\bin\Debug\netcoreapp3.0\ALEmanMuseum.Core.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\bin\Debug\netcoreapp3.0\ALEmanMuseum.Core.pdb
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\obj\Debug\netcoreapp3.0\ALEmanMuseum.Core.csprojAssemblyReference.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\obj\Debug\netcoreapp3.0\ALEmanMuseum.Core.AssemblyInfoInputs.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\obj\Debug\netcoreapp3.0\ALEmanMuseum.Core.AssemblyInfo.cs
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\obj\Debug\netcoreapp3.0\ALEmanMuseum.Core.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Core\obj\Debug\netcoreapp3.0\ALEmanMuseum.Core.pdb

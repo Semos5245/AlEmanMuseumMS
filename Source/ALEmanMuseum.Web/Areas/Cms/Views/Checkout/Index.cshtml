@@ -1,0 +1,145 @@
+﻿@model IEnumerable<CheckoutViewModel>
+@inject IStringLocalizer<Program> Localize
+@{
+    var checkoutsTitle = Localize["Checkouts"].Value;
+    ViewData["Title"] = checkoutsTitle;
+}
+
+<div class="block-header">
+    <h2>
+        @checkoutsTitle
+    </h2>
+</div>
+
+<!-- #region Checkouts Table-->
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    @checkoutsTitle
+                </h2>
+                <form asp-action="Index" asp-controller="Checkout" method="get" class="form-inline">
+                    <label for="fromDate" class="col-form-label">@Localize["From Date"].Value</label>
+                    <input type="date" name="fromDate" id="fromDate" class="form-control" />
+                    <label for="toDate" class="col-form-label">@Localize["To Date"].Value</label>
+                    <input type="date" name="toDate" id="toDate" class="form-control" />
+                    <button type="submit" class="btn btn-primary m-l-5">@Localize["Search"].Value</button>
+                </form>
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">more_vert</i>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a asp-controller="Checkout" asp-action="Create">@Localize["Add Checkout"]</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover" id="checkoutsTable">
+                        <thead>
+                            <tr>
+                                <th>@Localize["Checkout Number"]</th>
+                                <th>@Localize["Customer Name"]</th>
+                                <th>@Localize["Customer Phone"]</th>
+                                <th>@Localize["Total Items"]</th>
+                                <th>@Localize["Total Value"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var checkout in Model)
+                            {
+                                var trId = "tr" + checkout.CheckoutNumber;
+                                
+                                <tr id="@trId">
+                                    <td>@checkout.CheckoutNumber</td>
+                                    <td>@(string.IsNullOrEmpty(checkout.CustomerName) ? Localize["No name"] : checkout.CustomerName)</td>
+                                    <td>@(string.IsNullOrEmpty(checkout.CustomerPhone) ? Localize["No phone"] : checkout.CustomerPhone)</td>
+                                    <td>@checkout.TotalItems</td>
+                                    <td>@String.Format("{0:.00}", checkout.TotalValue)</td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="deleteCheckout" data-checkoutid="@checkout.CheckoutNumber" title="@Localize["Delete Checkout"].Value">&nbsp;<i class="fa fa-trash"></i>@Localize["Delete"]</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- #endregion -->
+
+@section Modals{
+    <!-- #region Delete Modal -->
+    <div class="modal fade" id="deleteCheckoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <p class="heading">@Localize["Re-add checkout content"].Value</p>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <input type="hidden" value="" id="deleteCheckoutId" />
+                <!--Body-->
+                <div class="modal-body">
+                    <i class="fa fa-times fa-4x animated rotateIn"></i>
+                </div>
+
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button class="btn btn-outline-danger waves-effect confirmationBtn" data-confirm="true">@Localize["Yes"]</button>
+                    <button class="btn btn-danger waves-effect confirmationBtn" data-confirm="false">@Localize["No"]</button>
+                </div>
+            </div>
+            <!--/.Content-->
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@section Scripts{
+    <script>
+    $(function () {
+        $('#checkoutsTable').DataTable({
+            search: false
+        });
+
+        $('.deleteCheckout').on('click', function () {
+            var checkoutId = $(this).data('checkoutid');
+
+            $('#deleteCheckoutId').val(checkoutId);
+
+            $('#deleteCheckoutModal').modal('toggle');
+        });
+
+        $('.confirmationBtn').on('click', function () {
+            var imageId = $('#deleteCheckoutId').val();
+            var confirmation = $(this).data('confirm');
+
+            $.ajax({
+                url: '@Url.Action("Delete", "Checkout")/' + imageId + '?reAddContent=' + confirmation,
+                method: 'POST',
+                success: function (data) {
+                    $("#checkoutsTable").DataTable().row('#tr' + imageId).remove().draw(false);
+                    $('#deleteCheckoutModal').modal('toggle');
+                    ShowSuccessNotification('@Localize["Checkout deleted successfully"].Value');
+                }
+
+            }).fail(function (e) {
+                ShowErrorNotification(e.responseText);
+            });
+
+        });
+    });
+    </script>
+}

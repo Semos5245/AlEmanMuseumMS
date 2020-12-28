@@ -1,0 +1,15 @@
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Data.deps.json
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Data.runtimeconfig.json
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Data.runtimeconfig.dev.json
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Data.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Data.pdb
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Core.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\bin\Debug\netcoreapp3.1\ALEmanMuseum.Core.pdb
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.csprojAssemblyReference.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.AssemblyInfoInputs.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.AssemblyInfo.cs
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.csproj.CopyComplete
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.pdb
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.genruntimeconfig.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Data\obj\Debug\netcoreapp3.1\ALEmanMuseum.Data.csproj.CoreCompileInputs.cache

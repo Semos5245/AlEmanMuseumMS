@@ -1,0 +1,377 @@
+﻿@model CheckoutCreationViewModel
+@inject IStringLocalizer<Program> Localize
+@{
+    ViewData["Title"] = Localize["New Checkout"].Value;
+}
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <p><a asp-action="Index" asp-controller="Checkout" style="position: absolute; top: 0; left: 0; margin: 0.3em;"><i class="fa fa-arrow-circle-left fa-2x"></i></a></p><br />
+                <h2>@Localize["Checkout Number"]: @Model.CheckoutNumber</h2>
+
+            </div>
+            @* Checkout items table where stuff are going to be added*@
+            <div class="body">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <h2>@Localize["Items Count"]: <span id="totalItemsCount">0</span></h2>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <h2>@Localize["Total Value"]: <span id="totalItemsValue">0.00</span></h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <label for="customerName">@Localize["Customer Name"]:</label>
+                        <input id="customerName" placeholder="@Localize["Customer name"]" />
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <label for="customerPhone">@Localize["Customer Phone"]:</label>
+                        <input id="customerPhone" placeholder="09**********" />
+                    </div>
+                </div>
+                <table class="table bg-info" id="checkoutItemsTable">
+                    <thead>
+                        <tr>
+                            <th>@Localize["Name"]</th>
+                            <th>@Localize["Quantity"]</th>
+                            <th>@Localize["Price"]</th>
+                            <th>@Localize["Total"]</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody style="color: black; min-height:5rem;" class="bg-warning">
+                    </tbody>
+                    <tfoot class="bg-info">
+                        <tr>
+                            <td>
+                                <label for="itemsList" class="form-label">@Localize["Item"]:</label>
+                                <select id="itemsList" class="form-control">
+                                    <option value="">@Localize["Choose an item"]</option>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        <option value="@item.Id">@item.FullName</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <label for="newQuantity" class="form-label">@Localize["Quantity"]:</label>
+                                <input class="form-control" type="number" required id="newQuantity" />
+                            </td>
+                            <td>
+                                <div class="w-100">
+                                    <label for="newPrice" class="form-label">@Localize["Price"]:</label>
+                                    <input class="form-control" type="number" min="0" required pattern="\d*" id="newPrice" />
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-info" id="addItemBtn">@Localize["Add"]</button>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <button class="btn btn-danger btn-lg" style="width: 100%;" id="clearBtn">@Localize["Clear"]</button>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <button class="btn btn-success btn-lg" style="width: 100%;" id="saveCheckoutBtn">@Localize["Save Checkout"].Value</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Modals{
+    <div class="modal fade" id="deleteItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <h3 class="heading">@Localize["Are you sure?"]</h3>
+                </div>
+                <input type="hidden" id="deleteItemId" />
+                <!--Body-->
+                <div class="modal-body">
+                    <i class="fa fa-times fa-4x animated rotateIn"></i>
+                </div>
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button id="deleteBtn" class="btn btn-outline-danger">@Localize["Yes"]</button>
+                    <button class="btn btn-danger waves-effect" data-dismiss="modal">@Localize["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@section Scripts{
+    <script>
+    $(function () {
+        var table = $('#checkoutItemsTable').DataTable({
+            paging: false,
+            searching: false,
+            ordering: false,
+            responsive: true,
+            autoWidth: true,
+            info: false,
+            language: {
+                'emptyTable': [],
+            }
+        });
+
+        var itemsData = [];
+        itemsData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Items));
+        var checkoutItems = [];
+
+        $('#clearBtn').on('click', function () { resetTable(); });
+        $(document.body).on('click', '.deleteItem', function () {
+            $('#deleteItemId').val($(this).data('itemid'));
+            $('#deleteItemModal').modal('toggle');
+        });
+        $('#itemsList').on('change', function (e) {
+            let newItemId = $(this).val();
+
+            if (newItemId == '') {
+                resetAddItemSection();
+                return;
+            }
+
+            // find item from itemsData
+            let item = itemsData.find(o => o.Id == newItemId);
+            if (!item) { resetAddItemSection(); return; }
+
+            // update quantity and price as needed
+            let newQuantityInput = $('#newQuantity');
+            newQuantityInput.val(item.Quantity > 0 ? 1 : 0);
+            newQuantityInput.attr('title', '@Localize["Max quantity"]: ' + item.Quantity);
+            newQuantityInput.attr('max', item.Quantity);
+
+            let newPriceElement = $('#newPrice');
+            newPriceElement.val(item.SellingPrice);
+            newPriceElement.attr('title', '@Localize["Original price"]: ' + item.OriginalPrice);
+        });
+
+        $('#deleteBtn').on('click', function () {
+            let itemId = $('#deleteItemId').val();
+            let checkoutItem = checkoutItems.find(i => i.itemId == itemId);
+            if (!checkoutItem) return;
+            let item = itemsData.find(i => i.Id == itemId);
+            if (!item) return;
+
+            item.Quantity += checkoutItem.quantity;
+
+            checkoutItems = checkoutItems.filter(i => i.itemId != itemId);
+            table.row('#tr' + itemId).remove().draw(false);
+
+            $('#deleteItemModal').modal('toggle');
+        });
+
+        $('#addItemBtn').on('click', function () {
+            let selectedItemId = $('#itemsList').val();
+
+            if (selectedItemId == '') {
+                resetAddItemSection();
+                ShowErrorNotification('@Localize["An item should be choosen"]');
+                return;
+            }
+
+            let item = itemsData.find(o => o.Id == selectedItemId);
+            if (!item) {
+                resetAddItemSection();
+                ShowErrorNotification('@Localize["An item should be choosen"]');
+                return;
+            }
+
+            let newQuantity = parseInt($('#newQuantity').val());
+            if (newQuantity && newQuantity < 1) {
+                ShowErrorNotification('@Localize["Invlaid quantity"]');
+                return;
+            }
+
+            if (item.quantity < newQuantity) {
+                ShowErrorNotification('@Localize["Not enough quantity"]')
+                return;
+            }
+
+            let newPrice = parseInt($('#newPrice').val());
+
+            if (newPrice && newPrice < 0) {
+                ShowErrorNotification('@Localize["Invlid price"]');
+                return;
+            }
+
+            // Check if the item already exists
+            let existingItem = checkoutItems.find(o => o.itemId == item.Id);
+            if (existingItem && existingItem.price != newPrice) {
+                ShowErrorNotification('@Localize["Item exists with a different price"]')
+                return;
+            }
+
+            item.Quantity -= newQuantity;
+
+            if (!existingItem) {
+                addRowToTable(item.Id, item.FullName, newQuantity, newPrice);
+
+                checkoutItems.push({
+                    itemId: item.Id,
+                    quantity: newQuantity,
+                    price: newPrice
+                });
+
+                resetAddItemSection();
+                recalculateTotalItemsCount();
+                recalculateTotalItemsValue();
+                return;
+            }
+
+            existingItem.quantity += newQuantity;
+
+            // Update the existing item quantity at the ui
+            $('#quantity' + existingItem.itemId).html(existingItem.quantity);
+
+            resetAddItemSection();
+            recalculateTotalItemsCount();
+            recalculateTotalItemsValue();
+        });
+
+        $('#saveCheckoutBtn').on('click', function () {
+
+            if (checkoutItems.length < 1) {
+                ShowErrorNotification('@Localize["Checkout is empty"].Value');
+                return;
+            }
+
+            if (dataHasErrors()) {
+                ShowErrorNotification('@Localize["Erros in entered data"]');
+                return;
+            }
+
+            let data = {
+                CustomerName: $('#customerName').val(),
+                CustomerPhone: $('#customerPhone').val(),
+                CheckoutItems: checkoutItems
+            };
+
+            // Send a request to add the data
+            $.ajax({
+                url: '@Url.Action("AddCheckout", "Checkout")',
+                method: 'POST',
+                data: data,
+                success: function (data) {
+                    //setTimeout(function () {
+                        
+                    //}, 2000);
+                    // Show success notification
+                    ShowSuccessNotification("@Localize["Checkout has been added successfully!"]", function () { location.reload(); });
+                }
+            }).fail(function (e) {
+                ShowErrorNotification(e.responseText);
+            });
+        });
+
+        function addRowToTable(itemId, itemName, quantity, price) {
+            let tr = document.createElement('tr');
+            tr.setAttribute('id', 'tr' + itemId);
+
+            let nameTd = document.createElement('td');
+            nameTd.innerHTML = itemName;
+
+            let quantityTd = document.createElement('td');
+            quantityTd.setAttribute('id', 'quantity' + itemId);
+            quantityTd.innerHTML = quantity;
+
+            let priceTd = document.createElement('td');
+            priceTd.setAttribute('id', 'price' + itemId);
+            priceTd.innerHTML = price;
+
+            let totalTd = document.createElement('td');
+            totalTd.setAttribute('id', 'total' + itemId);
+            totalTd.innerHTML = quantity * price;
+
+            let actionsTd = document.createElement('td');
+            let deleteATag = document.createElement('a');
+            deleteATag.setAttribute('href', 'javascript:void(0)');
+            deleteATag.setAttribute('data-itemid', itemId);
+
+            deleteATag.classList.add('deleteItem');
+
+            let iDeleteTag = document.createElement('i');
+            iDeleteTag.setAttribute('class', 'fa fa-trash');
+            deleteATag.appendChild(iDeleteTag);
+
+            actionsTd.appendChild(deleteATag);
+
+            tr.appendChild(nameTd)
+            tr.appendChild(quantityTd);
+            tr.appendChild(priceTd);
+            tr.appendChild(totalTd);
+            tr.appendChild(actionsTd);
+
+            $('#checkoutItemsTable').find('tbody')[0].appendChild(tr);
+        }
+
+        function recalculateTotalItemsCount() {
+            let newCount = checkoutItems.reduce(function (previousValue, currentValue) {
+                return previousValue + currentValue['quantity'];
+            },0);
+
+            $('#totalItemsCount').html(newCount);
+        }
+
+        function recalculateTotalItemsValue() {
+            let newValue = checkoutItems.reduce(function (previousValue, currentValue) {
+                return previousValue + (currentValue['quantity'] * currentValue['price']);
+            }, 0);
+            $('#totalItemsValue').html(newValue);
+        }
+
+        function resetTable() {
+
+            checkoutItems.forEach(o => {
+                let item = itemsData.find(i => i.Id == o.itemId);
+                if (item) item.Quantity += o.quantity;
+
+                table.row('#tr' + o.itemId).remove().draw(false);
+            });
+
+            checkoutItems = [];
+            resetAddItemSection();
+            recalculateTotalItemsCount();
+            recalculateTotalItemsValue();
+        }
+
+        function resetAddItemSection() {
+            $('#itemsList').val('');
+            let newQuantityInput = $('#newQuantity');
+            newQuantityInput.val(0);
+            newQuantityInput.attr('title', '');
+            newQuantityInput.removeAttr('max');
+
+            let newPriceElement = $('#newPrice');
+            newPriceElement.val(0.00);
+            newPriceElement.attr('title', '');
+        }
+
+        function dataHasErrors() {
+            // Check if a item has a negative quantity
+            let gotErrors = false;
+
+            // Check quantity only for now
+            itemsData.forEach(i => {
+                if (i.Quantity < 0) { return true; }
+            });
+
+            return gotErrors;
+        }
+    });
+    </script>
+} 

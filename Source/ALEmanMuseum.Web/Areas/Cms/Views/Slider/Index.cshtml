@@ -1,0 +1,466 @@
+﻿@model IEnumerable<Slider>
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Sliders"];
+}
+
+
+<div class="block-header">
+    <h2>
+        @Localizer["Sliders"]
+    </h2>
+</div>
+
+<!-- #region Sliders Table-->
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    @Localizer["Sliders"]
+                </h2>
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">more_vert</i>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a href="javascript:void(0);" id="addSliderBtn">@Localizer["Add Slider"]</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover" id="slidersTable">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Arabic name"]</th>
+                                <th>@Localizer["English name"]</th>
+                                <th>@Localizer["Added Date"]</th>
+                                <th>@Localizer["Last Modified Date"]</th>
+                                <th>@Localizer["Active"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var slider in Model)
+                            {
+                                var trId = "tr" + slider.Id;
+                                var tdArabicNameId = "tdArabicName" + slider.Id;
+                                var tdEnglishNameId = "tdEnglishName" + slider.Id;
+                                var tdModifiedDateId = "tdModifiedDate" + slider.Id;
+
+                                <tr id="@trId">
+                                    <td id="@tdArabicNameId">@slider.ArabicName</td>
+                                    <td id="@tdEnglishNameId">@slider.EnglishName</td>
+                                    <td>@slider.CreatedDate.ToLocalTime()</td>
+                                    <td id="@tdModifiedDateId">@slider.LastModifiedDate.ToLocalTime()</td>
+                                    <td>
+                                        <div class="text-center">
+                                            @if (slider.Active)
+                                            {
+                                                <i class="badge badge-success">@Localizer["Yes"]</i>
+                                            }
+                                            else
+                                            {
+                                                <i class="badge badge-danger">@Localizer["No"]</i>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="editSlider" data-sliderId="@slider.Id">&nbsp;<i class="fa fa-edit"></i></a>
+                                        <a href="javascript:void(0)" class="deleteSlider" data-sliderId="@slider.Id">&nbsp;<i class="fa fa-trash"></i></a>
+                                        @if (!slider.Active)
+                                        {
+                                            <a href="javascript:void(0)" class="makeActive" data-sliderId="@slider.Id"><i class="fa fa-check-circle"></i></a>
+                                        }
+                                        <a asp-action="Images" asp-controller="Slider" asp-route-id="@slider.Id"><i class="fa fa-images"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- #endregion -->
+
+@section Modals{
+
+    <!-- #region Add Modal -->
+    <div class="modal fade" id="addSliderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["Add New Slider"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="AddSliderForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <h4 class="text-center errorMessage" id="AdditionMessage"></h4>
+                        <div class="p-5">
+                            <label for="NewSliderArabicName">@Localizer["Arabic Name"]: </label>
+                            <input placeholder="اسم العارض" class="form-control" required id="NewSliderArabicName" />
+                            <label for="NewSliderEnglishName">@Localizer["English Name"]: </label>
+                            <input placeholder="Slider Name" class="form-control" required id="NewSliderEnglishName" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localizer["Add"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- #region Edit Modal -->
+    <div class="modal fade" id="editSliderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["Edit Slider"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="EditSliderForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <h3 class="text-center errorMessage" id="EditionMessage"></h3>
+                        <div class="p-5">
+                            <label for="EditedSliderArabicName">@Localizer["Arabic Name"]: </label>
+                            <input placeholder="اسم الصنف" class="form-control" required id="EditedSliderArabicName" />
+                            <label for="EditedSliderEnglishName">@Localizer["English Name"]: </label>
+                            <input placeholder="Slider Name" class="form-control" required id="EditedSliderEnglishName" />
+                        </div>
+                        <input type="hidden" id="EditedSliderId" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localizer["Edit"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- #region Delete Modal -->
+    <div class="modal fade" id="deleteSliderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <h3 class="heading">@Localizer["Are you sure?"]</h3>
+                    <h5 class="heading">@Localizer["Deleting the slider will delete its related images"]</h5>
+                </div>
+                <input type="hidden" value="" id="deleteSliderId" />
+                <!--Body-->
+                <div class="modal-body">
+
+                    <i class="fa fa-times fa-4x animated rotateIn"></i>
+
+                </div>
+
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button id="deleteBtn" class="btn btn-outline-danger">@Localizer["Yes"]</button>
+                    <button class="btn btn-danger waves-effect" data-dismiss="modal">@Localizer["No"]</button>
+                </div>
+            </div>
+            <!--/.Content-->
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@section Scripts{
+
+    <script>
+
+        $(function () {
+
+            // #region Startup Actions
+
+            $("#slidersTable").DataTable({
+                "processing": true,
+                "bServerSide": true,
+                "sAjaxSource": '@Url.Action("SlidersByPageAndSearch", "Slider")',
+                "sServerMethod": 'GET',
+                "aoColumns": [
+                    { data: 'arabicName', 'orderable': true},
+                    { data: 'englishName', 'orderable': true},
+                    { data: 'addedDate', 'orderable': true},
+                    { data: 'lastModifiedDate', 'orderable': true },
+                    {
+                        data: function (o) {
+                            if (o.active)
+                                return "<i class='badge badge-success'>@Localizer["Yes"]</i>";
+                            else
+                                return "<i class='badge badge-danger'>@Localizer["No"]</i>";
+                        }
+                    },
+                    {
+                        data: function (o) {
+                            var actions = "<a href='javascript:void(0)' class='editSlider' data-sliderid='" + o.id +"'><i class='fa fa-edit'></i></a>" +
+                                "<a href='javascript:void(0)' class='deleteSlider' data-sliderid='" + o.id + "'><i class='fa fa-trash-o'></i></a>";
+
+                            if (!o.active)
+                                actions += "<a href='javascript:void(0)' class='makeActive' data-sliderid='" + o.id + "'><i class='fa fa-check-circle'></i></a>";
+
+                            actions += "<a href='javascript:void(0)' class='sliderImages' data-sliderid='"+ o.id +"' ><i class='fa fa-image'></i></a>"
+
+                            return actions;
+                        }
+                    }
+                ],
+                createdRow: function (row, data, index) {
+                    var kids = $(row).children();
+                    $(kids[0]).attr('id', 'tdArabicName' + data.id);
+                    $(kids[1]).attr('id', 'tdEnglishName' + data.id);
+                    $(kids[3]).attr('id', 'tdModifiedDate' + data.id);
+                }
+            });
+
+            // #endregion
+
+        });
+
+        // #region Dom Elements
+
+        // Get basic elements for later use
+        var addMessageElement = $("#AdditionMessage");
+        var editMessageElement = $("#EditionMessage");
+        var deleteMessageElement = $("#DeletionMessage");
+        var addModal = $("#addSliderModal");
+        var editModal = $("#editSliderModal");
+        var deleteModal = $("#deleteSliderModal");
+        var deleteSliderIdElement = $("#deleteSliderId");
+        var editedSliderIdElement = $("#EditedSliderId");
+        var editedSliderArabicNameElement = $("#EditedSliderArabicName");
+        var editedSliderEnglishNameElement = $("#EditedSliderEnglishName");
+        var newSliderArabicNameElement = $("#NewSliderArabicName");
+        var newSliderEnglishNameElement = $("#NewSliderEnglishName");
+        var addForm = $("#AddSliderForm");
+        var editForm = $("#EditSliderForm");
+
+        // #endregion
+
+        // #region Event Subscriptions
+
+        // Subscribe to when the add is clicked
+        $("#addSliderBtn").click(function () {
+            // Show the add model
+            addModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that edit rows
+        $("#slidersTable").on('click', '.editSlider', function () {
+            // Get the id attached to the button that has been pressed
+            var id = $(this).data("Sliderid");
+
+            // Get the name related to the Slider id
+            var arabicName = $("#tdArabicName" + id).text();
+            var englishName = $("#tdEnglishName" + id).text();
+
+            // Fill the modal with the Slider name and the id
+            editedSliderIdElement.val(id);
+            editedSliderArabicNameElement.val(arabicName);
+            editedSliderEnglishNameElement.val(englishName);
+
+            // Open the modal
+            editModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that delete rows
+         $("#slidersTable").on('click', '.deleteSlider', function () {
+            // Fill the id in the modal
+            deleteSliderIdElement.val($(this).data("sliderid"));
+
+            // Open the modal
+            deleteModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that make a slider active
+         $("#slidersTable").on('click', '.makeActive', function () {
+             // Get the id attached to the button
+             var id = $(this).data("sliderid");
+
+             // Send request to make the slider active
+             MakeSliderActive(id);
+        });
+
+        // Subscribe to all buttons that make a slider active
+        $("#slidersTable").on('click', '.sliderImages', function (event) {
+             // Get the id attached to the button
+            var id = $(this).data("sliderid");
+
+             // Go to slider images
+             location.href = "@Url.Action("Images", "Slider")/" + id;
+         });
+
+        $("#deleteBtn").on("click", function () {
+            DeleteSlider(deleteSliderIdElement.val());
+        });
+
+        // Subscribe to when the add form is submitted
+        addForm.submit(function (e) {
+            // Prevent the form from being submitted
+            e.preventDefault();
+
+            // Add the Slider
+            AddSlider(newSliderArabicNameElement.val(), newSliderEnglishNameElement.val());
+        });
+
+        // Subscribe to when the edit form is submitted
+        editForm.submit(function (e) {
+            // Prevent the default behavior
+            e.preventDefault();
+
+            // Edit Slider
+            EditSlider(editedSliderIdElement.val(), editedSliderArabicNameElement.val(), editedSliderEnglishNameElement.val());
+        });
+
+        // #endregion
+
+        // #region Helper Functions
+
+        // Adds a new Slider
+        function AddSlider(arabicName, englishName) {
+
+            var data = {
+                arabicName: arabicName,
+                englishName: englishName
+            };
+
+            // Add Slider through ajax call
+            $.ajax({
+                // Type of request
+                type: "POST",
+                // Data to be sent
+                data: data,
+                // Url to send the request to
+                url: "@Url.Action("Create", "Slider")",
+                // If the request was successfull
+                success: function (data) {
+                    // Trigger the table to fetch data
+                    $("#slidersTable").DataTable().draw(true);
+
+                    // Close the modal
+                    addModal.modal("toggle");
+
+                    // Show success notification
+                    ShowSuccessNotification("@Localizer["Slider has been added successfully!"]");
+
+                    ClearModals();
+                }
+                // On fail
+            }).fail(function (e) {
+                addMessageElement.html(e.responseText)
+
+                // Show failure notification
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Deletes a Slider
+        function DeleteSlider(id) {
+            // Send request
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "Slider")/" + id,
+                success: function () {
+                    // Remove the row and re-apply the magic to the table
+                    $("#slidersTable").DataTable().row('#tr' + id).remove().draw(false);
+
+                    // Close the modal
+                    deleteModal.modal("toggle");
+
+                    // Show success message
+                    ShowSuccessNotification("@Localizer["Slider has been deleted successfully!"]");
+                    ClearModals();
+                }
+            }).fail(function (e) {
+                deleteMessageElement.val(e.responseText);
+
+                // Show error message
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Edits a Slider
+        function EditSlider(id, arabicName, englishName) {
+            var data = {
+                arabicName: arabicName,
+                englishName: englishName,
+                sliderId: id
+            };
+
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "@Url.Action("Edit", "Slider")",
+                success: function (data) {
+                    // Edit the values at the table
+                    $("#tdArabicName" + id).html(data.arabicName);
+                    $("#tdEnglishName" + id).html(data.englishName);
+                    $("#tdModifiedDate" + id).html(data.lastModifiedDate);
+
+                    // reapply the datatable magic
+                    $("#slidersTable").DataTable();
+
+                    // close the edit modal
+                    editModal.modal("toggle");
+
+                    // Show success message
+                    ShowSuccessNotification("@Localizer["Slider has been updated successfully!"]}");
+                    ClearModals();
+                }
+
+                // On failing
+            }).fail(function (e) {
+                deleteMessageElement.val(e.responseText);
+
+                // Show error message
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        function MakeSliderActive(id) {
+            $.ajax({
+                url: "@Url.Action("MakeSliderActive", "Slider")/" + id,
+                type: "POST",
+                success: function (data) {
+                    document.location.reload();
+                }
+            }).fail(function (e) {
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Clears data in the modals
+        function ClearModals() {
+            addMessageElement.html("");
+            editMessageElement.html("");
+            deleteMessageElement.html("");
+            deleteSliderIdElement.val("");
+            editedSliderIdElement.val("");
+            editedSliderArabicNameElement.val("");
+            editedSliderEnglishNameElement.val("");
+            newSliderArabicNameElement.val("");
+            newSliderEnglishNameElement.val("");
+        }
+
+        // #endregion
+
+    </script>
+
+}
+

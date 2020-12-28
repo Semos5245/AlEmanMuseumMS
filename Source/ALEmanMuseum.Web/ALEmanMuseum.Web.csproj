@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200705171642_Test.cs" />
+    <Compile Remove="Migrations\20200705171642_Test.Designer.cs" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Areas\Cms\Components\" />
+    <Folder Include="Areas\Cms\Models\" />
+    <Folder Include="Models\" />
+    <Folder Include="wwwroot\images\barcodes\" />
+    <Folder Include="wwwroot\images\sliders\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="wwwroot\css\bootstrap\.DS_Store" />
+    <None Include="wwwroot\css\css\.DS_Store" />
+    <None Include="wwwroot\css\css\mixins\.DS_Store" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\buttons.flash.min.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\buttons.html5.min.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\buttons.print.min.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\dataTables.buttons.min.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\jszip.min.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\pdfmake.min.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\extensions\export\vfs_fonts.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\jquery.dataTables.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\skin\bootstrap\images\Sorting icons.psd" />
+    <None Include="wwwroot\plugins\jquery-datatable\skin\bootstrap\js\dataTables.bootstrap.js" />
+    <None Include="wwwroot\plugins\jquery-datatable\skin\bootstrap\js\dataTables.bootstrap.min.js" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\ALEmanMuseum.Core\ALEmanMuseum.Core.csproj" />
+    <ProjectReference Include="..\ALEmanMuseum.Data\ALEmanMuseum.Data.csproj" />
+    <ProjectReference Include="..\ALEmanMuseum.Services\ALEmanMuseum.Services.csproj" />
+    <ProjectReference Include="..\ALEmanMuseum.Web.Framework\ALEmanMuseum.Web.Framework.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="wwwroot\plugins\bootstrap\css\bootstrap.min.css.map">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Areas\Cms\Controllers\CountryController.ar.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Areas\Cms\Controllers\HomeController.ar.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Areas\Cms\Views\Country\Index.ar.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Areas\Cms\Views\Home\Index.ar.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+
+
+</Project>

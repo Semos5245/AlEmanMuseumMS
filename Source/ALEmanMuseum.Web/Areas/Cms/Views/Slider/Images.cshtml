@@ -1,0 +1,89 @@
+﻿@model IEnumerable<SliderImage>
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = "Images";
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <a asp-action="Index" asp-controller="Slider" class="card-link"><i class="fa fa-backward"></i></a>&nbsp;
+                <h2>@Localizer["Upload file"]</h2>
+            </div>
+            <div class="body">
+                <form asp-action="UploadFile" asp-controller="Slider" asp-route-id="@ViewData["SliderId"]" id="fileUploadForm" class="dropzone" enctype="multipart/form-data">
+                    <div class="dz-message">
+                        <div class="drag-icon-cph">
+                            <i class="material-icons">touch_app</i>
+                        </div>
+                        <h3>@Localizer["Drop files here or click to upload"].</h3>
+                    </div>
+                    <div class="fallback">
+                        <input name="file" type="file" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>@Localizer["Slider Images"]</h2>
+            </div>
+            <div class="body">
+                @if (Model != null)
+                {
+                    <div class="row" id="images">
+
+                    @foreach (var image in Model)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                            <div class="card">
+                                <a href="~/images/sliders/@image.ImageName">
+                                    <img src="~/images/sliders/@image.ImageName" class="card-img-top img-responsive thumbnail" asp-append-version="true" style="width: 25rem;height:25rem;">
+                                </a>
+                                <div class="card-body text-center">
+                                    <a class="btn btn-danger deleteImage" data-imageid="@image.Id">Delete</a>
+                                    <hr />
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(function () {
+
+            Dropzone.options.fileUploadForm = {
+                success: function (file) { location.reload();}
+            };
+
+            $(".deleteImage").on("click", function (event) {
+                var id = $(this).data("imageid");
+
+                $.ajax({
+                    url: "@Url.Action("Delete", "SliderImage")/" + id,
+                    type: "POST",
+                    success: function (data) {
+                        location.reload();
+                    }
+                }).fail(function (e) {
+                    ShowErrorNotification(e.responseText);
+                })
+            });
+        });
+    </script>
+}

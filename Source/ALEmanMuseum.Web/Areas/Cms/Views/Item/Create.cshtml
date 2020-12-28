@@ -1,0 +1,189 @@
+﻿@model ItemViewModel
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Create Item"];
+}
+
+
+@section Css{
+    @*<link rel="stylesheet" href="~/plugins/bootstrap-select-1.13.9/dist/css/bootstrap-select.min.css"/>*@
+    <link rel="stylesheet" href="~/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css" />
+}
+
+<div class="block-header">
+    <h2>
+        @Localizer["Create Item"]
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card" style="background-color: #e6e6e6">
+            <div asp-validation-summary="ModelOnly"></div>
+            <form asp-controller="Item" asp-action="Create" method="post" id="createForm">
+                <input type="hidden" asp-for="ImageId" />
+                <div class="body">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label asp-for="CategoryId">@Localizer["Category"]</label>
+                            <div class="form-group">
+                                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control">
+                                    <option value="">@Localizer["Select a category"]</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="ArabicName">@Localizer["Arabic Name"]</label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="ArabicName" class="form-control" placeholder="@Localizer["Arabic name"]" /></div>
+                                <span asp-validation-for="ArabicName" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="EnglishName">@Localizer["English Name"]</label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="EnglishName" class="form-control" placeholder="@Localizer["English name"]" /></div>
+                                <span asp-validation-for="EnglishName" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="ArabicDescription"></label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="ArabicDescription" class="form-control" placeholder="@Localizer["Arabic description"]" /></div>
+                                <span asp-validation-for="ArabicDescription" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="EnglishDescription"></label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="EnglishDescription" class="form-control" placeholder="@Localizer["English description"]" /></div>
+                                <span asp-validation-for="EnglishDescription" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="Quantity">@Localizer["Quantity"]</label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="Quantity" class="form-control" placeholder="20" /></div>
+                                <span asp-validation-for="Quantity" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label asp-for="OriginalPrice">@Localizer["Original Price"]</label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="OriginalPrice" class="form-control" placeholder="52000 @Localizer["S.P"]" /></div>
+                                <span asp-validation-for="OriginalPrice" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="SellingPrice">@Localizer["Selling Price"]</label>
+                            <div class="form-group">
+                                <div class="form-line"><input asp-for="SellingPrice" class="form-control" placeholder="52000 @Localizer["S.P"]" /></div>
+                                <span asp-validation-for="SellingPrice" class="text-danger"></span>
+                            </div>
+
+                            <label asp-for="Tags">@Localizer["Tags"]</label>
+                            <div class="form-group">
+                                <input asp-for="Tags" class="form-control" data-role="tagsinput" />
+                                <span asp-validation-for="Tags" class="text-danger"></span>
+                            </div>
+
+                            <label class="custom-control-label" asp-for="Hidden">@Localizer["Hidden"]</label>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input asp-for="Hidden" class="js-switch">
+                                    <span asp-validation-for="Hidden"></span>
+                                </div>
+                            </div>
+
+                            <label class="custom-control-label" asp-for="AddToCartEnabled">@Localizer["Can add to cart"]</label>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input asp-for="AddToCartEnabled" class="js-switch">
+                                    <span asp-validation-for="AddToCartEnabled"></span>
+                                </div>
+                            </div>
+
+                            <label class="control-label">@Localizer["Image"]</label>
+                            <div class="form-group custom-file">
+                                <input asp-for="ImageFile" class="custom-file-input">
+                                <label class="custom-file-label" for="ImageFile">@Localizer["Choose file"]</label>
+                            </div>
+                            @if (string.IsNullOrEmpty(Model.ImageThumbUrl))
+                            {
+                                <img id="imageTarget" style="width:100px" />
+                            }
+                            else
+                            {
+                                <img id="imageTarget" src="~/images/thumbs/@Model.ImageThumbUrl" style="width:100px" />
+                            }
+                        </div>
+
+                    </div>
+                </div>
+                <div class="footer text-center">
+                    <div class="row">
+                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
+                            <button type="submit" class="btn btn-primary btn-outline-secondary">@Localizer["Create"]</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+ @*<script src="~/plugins/bootstrap-select-1.13.9/dist/js/bootstrap-select.min.js"></script>*@
+    <script src="~/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+    <script>
+        $(function () {
+
+            $('#createForm').submit(function(e) {
+                e.preventDefault();
+
+                var data = $(this).serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Create", "Item")',
+                    type: 'POST',
+                    data: data,
+                    success: (e) => {
+                        setTimeout(() => {
+                            ShowSuccessNotification("@Localizer["Item has been edited successfully"].Value")
+                        }, 2000);
+
+                        location.href = "@Url.Action("Index", "Item")";
+                    }
+                }).fail((e) => {
+                    ShowErrorNotification(e.responseText);
+                });
+            });
+
+            $(".js-switch").each(function (index, elem) {
+                var init = new Switchery(elem);
+            });
+
+            $(".bootstrap-tagsinput").css('width', '100%');
+
+            // Read Image
+            $("#ImageFile").change(function () {
+                var File = this.files;
+                if (File && File[0]) {
+                    ReadImage(File[0]);
+                }
+
+            });
+
+            // Function to read the image file
+            var ReadImage = function (file) {
+
+                var reader = new FileReader;
+                var image = new Image;
+
+                reader.readAsDataURL(file);
+                reader.onload = function (_file) {
+                    image.src = _file.target.result;
+                    image.onload = function () {
+                        $("#imageTarget").attr('src', _file.target.result);
+                    }
+                }
+            }
+        });
+    </script>
+}

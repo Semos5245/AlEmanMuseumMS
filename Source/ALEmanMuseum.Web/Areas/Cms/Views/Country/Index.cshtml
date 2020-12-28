@@ -1,0 +1,361 @@
+﻿@model IEnumerable<Country>
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Countries"];
+}
+
+<div class="block-header">
+    <h2>
+        @Localizer["Countries"]
+    </h2>
+</div>
+
+<!-- #region Countries Table-->
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    @Localizer["Countries"]
+                </h2>
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">more_vert</i>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a href="javascript:void(0);" id="addCountryBtn">@Localizer["Add Country"]</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover" id="countriesTable">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Name"]</th>
+                                <th>@Localizer["Added Date"]</th>
+                                <th>@Localizer["Last Modified Date"]</th>
+                                <th>@Localizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var country in Model)
+                            {
+                                var trId = "tr" + country.Id;
+                                var tdNameId = "tdName" + country.Id;
+                                var tdLastModifiedDateId = "tdLastModifiedDate" + country.Id;
+
+                                <tr id="@trId">
+                                    <td id="@tdNameId">@country.Name</td>
+                                    <td>@country.CreatedDate.ToLocalTime()</td>
+                                    <td id="@tdLastModifiedDateId">@country.LastModifiedDate.ToLocalTime()</td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="editCountry" data-countryId="@country.Id">&nbsp;<i class="fa fa-edit"></i>@Localizer["Edit"]</a>
+                                        <a href="javascript:void(0)" class="deleteCountry" data-countryId="@country.Id">&nbsp;<i class="fa fa-trash"></i>@Localizer["Delete"]</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- #endregion -->
+
+@section Modals{
+
+    <!-- #region Add Modal -->
+    <div class="modal fade" id="addCountryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["Add New Country"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="AddCountryForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <h4 class="text-center errorMessage" id="AdditionMessage"></h4>
+                        <div class="p-5">
+                            <label for="NewCountryName">@Localizer["Name"]: </label>
+                            <input placeholder="@Localizer["Syria"]" class="form-control" required id="NewCountryName" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localizer["Add"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- #region Edit Modal -->
+    <div class="modal fade" id="editCountryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["Edit Country"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="EditCountryForm" action="javascript:void(0)">
+                    <div class="modal-body">
+                        <h3 class="text-center errorMessage" id="EditionMessage"></h3>
+                        <div class="p-5">
+                            <label for="EditCountryName">@Localizer["Name"]: </label>
+                            <input placeholder="@Localizer["Syria"]" class="form-control" required id="EditedCountryName" />
+                        </div>
+                        <input type="hidden" id="EditedCountryId" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Close"]</button>
+                        <button type="submit" class="btn btn-primary">@Localizer["Edit"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+    <!-- #region Delete Modal -->
+    <div class="modal fade" id="deleteCountryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+            <!--Content-->
+            <div class="modal-content text-center">
+                <!--Header-->
+                <div class="modal-header d-flex justify-content-center">
+                    <p class="heading">@Localizer["Are you sure?"]</p>
+                </div>
+                <input type="hidden" value="" id="deleteCountryId" />
+                <!--Body-->
+                <div class="modal-body">
+
+                    <i class="fa fa-times fa-4x animated rotateIn"></i>
+
+                </div>
+
+                <!--Footer-->
+                <div class="modal-footer flex-center">
+                    <button id="deleteBtn" class="btn btn-outline-danger">@Localizer["Yes"]</button>
+                    <button class="btn btn-danger waves-effect" data-dismiss="modal">@Localizer["No"]</button>
+                </div>
+            </div>
+            <!--/.Content-->
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@section Scripts{
+
+    <script>
+
+        $(function () {
+
+            // #region Startup Actions
+
+            $("#countriesTable").DataTable({
+                "processing": true,
+                "bServerSide": true,
+                "sAjaxSource": '@Url.Action("CountriesByPageAndSearch", "Country")',
+                "sServerMethod": 'GET',
+                "aoColumns": [
+                    { data: 'name', 'orderable': true},
+                    { data: 'createdDate', 'orderable': true},
+                    { data: 'lastModifiedDate', 'orderable': true },
+                    {
+                        data: function (o) {
+                            return "<a href='javascript:void(0)' class='editCountry' data-countryid='" + o.id +"'><i class='fa fa-edit'></i>@Localizer["Edit"]</a>" +
+                                "<a href='javascript:void(0)' class='deleteCountry' data-countryid='" + o.id +"'><i class='fa fa-trash-o'></i>@Localizer["Delete"]</a>";
+                        }
+                    }
+                ],
+                createdRow: function (row, data, index) {
+                    var kids = $(row).children();
+                    $(kids[0]).attr('id', 'tdName' + data.id);
+                    $(kids[2]).attr('id', 'tdLastModifiedDate' + data.id);
+                }
+            });
+
+            // #endregion
+
+        });
+
+        // #region Dom Elements
+
+        // Get basic elements for later use
+        var addModal = $("#addCountryModal");
+        var editModal = $("#editCountryModal");
+        var deleteModal = $("#deleteCountryModal");
+        var deleteCountryIdElement = $("#deleteCountryId");
+        var editedCountryIdElement = $("#EditedCountryId");
+        var editedCountryNameElement = $("#EditedCountryName");
+        var newCountryNameElement = $("#NewCountryName");
+        var addForm = $("#AddCountryForm");
+        var editForm = $("#EditCountryForm");
+
+        // #endregion
+
+        // #region Event Subscriptions
+
+        // Subscribe to when the add is clicked
+        $("#addCountryBtn").click(function () {
+            // Show the add model
+            addModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that edit rows
+        $("#countriesTable").on('click', '.editCountry', function () {
+            // Get the id attached to the button that has been pressed
+            var id = $(this).data("countryid");
+
+            // Get the name related to the country id
+            var name = $("#tdName" + id).text();
+
+            // Fill the modal with the country name and the id
+            editedCountryIdElement.val(id);
+            editedCountryNameElement.val(name);
+
+            // Open the modal
+            editModal.modal("toggle");
+        });
+
+        // Subscribe to all buttons that delete rows
+         $("#countriesTable").on('click', '.deleteCountry', function () {
+            // Fill the id in the modal
+            deleteCountryIdElement.val($(this).data("countryid"));
+
+            // Open the modal
+            deleteModal.modal("toggle");
+        });
+
+        $("#deleteBtn").on("click", function () {
+            DeleteCountry(deleteCountryIdElement.val());
+        });
+
+        // Subscribe to when the add form is submitted
+        addForm.submit(function (e) {
+            // Prevent the form from being submitted
+            e.preventDefault();
+
+            // Add the country
+            AddCountry(newCountryNameElement.val());
+        });
+
+        // Subscribe to when the edit form is submitted
+        editForm.submit(function (e) {
+            // Prevent the default behavior
+            e.preventDefault();
+
+            // Edit country
+            EditCountry(editedCountryIdElement.val(), editedCountryNameElement.val());
+        });
+
+        // #endregion
+
+        // #region Helper Functions
+
+        // Adds a new country
+        function AddCountry(name) {
+
+            // Add country through ajax call
+            $.ajax({
+                // Type of request
+                type: "POST",
+                // Url to send the request to
+                url: "@Url.Action("Create", "Country")/" + name,
+                // If the request was successfull
+                success: function (data) {
+                    // Trigger the table to fetch data
+                    $("#countriesTable").DataTable().draw(true);
+
+                    // Close the modal
+                    addModal.modal("toggle");
+                    setTimeout(() => {
+                        // Show success notification
+                        ShowSuccessNotification("@Localizer["Country has been added successfully!"]");
+                    }, 2000);
+
+                    location.reload();
+                }
+                // On fail
+            }).fail(function (e) {
+                // Show failure notification
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Deletes a conuntry
+        function DeleteCountry(id) {
+            // Send request
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "Country")/" + id,
+                success: function () {
+                    // Remove the row
+                    //$("#tr" + id).remove();
+                    // Reapply the magic the table
+                    $("#countriesTable").DataTable().row('#tr' + id).remove().draw(false);
+
+                    // Close the modal
+                    deleteModal.modal("toggle");
+
+                    setTimeout(() => {
+                        // Show success message
+                        ShowSuccessNotification("@Localizer["Country has been deleted successfully!"]");
+                    }, 2000);
+
+                    location.reload();
+                }
+            }).fail(function (e) {
+                // Show error message
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // Edits a country
+        function EditCountry(id, name) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Edit", "Country")/" + id + "?name=" + name,
+                success: function (data) {
+                    // Edit the values at the table
+                    $("#tdName" + id).html(data.name);
+                    $("#tdModifiedDate" + id).html(data.lastModifiedDate);
+
+                    // reapply the datatable magic
+                    $("#countriesTable").DataTable();
+
+                    // close the edit modal
+                    editModal.modal("toggle");
+
+                    setTimeout(() => {
+                        // Show success message
+                        ShowSuccessNotification("@Localizer["Country has been updated successfully!"]}");
+                    }, 2000)
+
+                    location.reload();
+                }
+
+                // On failing
+            }).fail(function (e) {
+                // Show error message
+                ShowErrorNotification(e.responseText);
+            });
+        }
+
+        // #endregion
+
+
+    </script>
+
+}
+

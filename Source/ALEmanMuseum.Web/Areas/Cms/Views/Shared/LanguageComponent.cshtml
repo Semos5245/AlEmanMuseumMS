@@ -1,0 +1,23 @@
+﻿<div>
+    <label>Language:</label>
+    <select id="languagesList">
+        <option value="">Select a language</option>
+        <option value="arabic">Arabic</option>
+        <option value="engish">English</option>
+    </select>
+</div>
+
+<script>
+    $(function () {
+        $("#languagesList").change(function () {
+            // Get the option selected
+            var selectedLanguage = $("#languagesList option:selected").val();
+
+            // Send request to change the language
+            $.ajax({
+                url: "@Url.Action("ChangeLanguage", "Home")?newLanguage=" + selectedLanguage,
+                type: "POST"
+            })
+        });
+    });
+</script>

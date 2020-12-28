@@ -1,0 +1,9 @@
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\bin\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.deps.json
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\bin\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\bin\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.pdb
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\obj\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.csprojAssemblyReference.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\obj\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.AssemblyInfoInputs.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\obj\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.AssemblyInfo.cs
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\obj\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.csproj.CoreCompileInputs.cache
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\obj\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.dll
+D:\Projects\Mine\C#\ALEmanMuseum\ALEmanMuseum\ALEmanMuseum.Web.Framework\obj\Release\netcoreapp3.0\ALEmanMuseum.Web.Framework.pdb
